@@ -1,6 +1,13 @@
-cmake_minimum_required(VERSION 3.2)
+cmake_minimum_required(VERSION 3.13)
 PROJECT(mothbus CXX)
 
+include(FetchContent)
+
+FetchContent_Declare(GSL
+ GIT_REPOSITORY https://github.com/microsoft/GSL.git
+ GIT_TAG v4.0.0
+)
+FetchContent_MakeAvailable(GSL)
 
 if (MSVC)
 	# multiprocess build + bigobj linker
@@ -20,7 +27,7 @@ if (MSVC)
     add_definitions (-DBOOST_ALL_NO_LIB) # disable autolinking
 endif()
 
-set(GSL_INCLUDE_DIRS "C:\\program files\\GSL\\include" CACHE PATH "Path to core guideline library")
+# set(GSL_INCLUDE_DIRS "C:\\program files\\GSL\\include" CACHE PATH "Path to core guideline library")
 
 include_directories(include ${Boost_INCLUDE_DIRS} ${GSL_INCLUDE_DIRS})
 
@@ -28,10 +35,10 @@ add_library(mothbus STATIC ${PROJ_INCLUDES} ${PROJ_SRC})
 target_include_directories(mothbus INTERFACE 
     $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
     $<INSTALL_INTERFACE:include>)
-target_link_libraries(mothbus INTERFACE ${Boost_LIBRARIES})
+target_link_libraries(mothbus INTERFACE ${Boost_LIBRARIES} GSL)
 
-enable_testing()
-add_subdirectory(test)
+# enable_testing()
+# add_subdirectory(test)
 
 option(Build_Examples OFF "Build examples for mothbus")
 if (${Build_Examples})
