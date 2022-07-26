@@ -6,6 +6,10 @@
 
 namespace po = boost::program_options;
 
+using byte_vector = std::vector<mothbus::byte>;
+using byte_count_t = byte_vector::size_type;
+using reg_count_t = byte_count_t;
+
 std::ostream& operator<<(std::ostream& os, const gsl::span<gsl::byte>& bytes) 
 {
 	for (auto byte : bytes)
@@ -19,7 +23,7 @@ int main(int argc, char** argv)
 	po::options_description desc("Allowed options");
 
 	int port;
-	int length;
+	reg_count_t length;
 	std::string host = "localhost";
 	uint16_t register_address;
 	uint16_t slave;
@@ -27,7 +31,7 @@ int main(int argc, char** argv)
 	desc.add_options()
 		("help", "produce help message")
 		("port,p", po::value<int>(&port)->default_value(502), "tcp port (default 502)")
-		("length,l", po::value<int>(&length)->default_value(1), "number of registers (default 1)")
+		("length,l", po::value<reg_count_t>(&length)->default_value(1), "number of registers (default 1)")
 		("address,a", po::value<uint16_t>(&register_address)->default_value(1), "register address")
 		("slave,s", po::value<uint16_t>(&slave)->default_value(255), "slave id")
 		("host", po::value<std::string>(), "host")
@@ -57,14 +61,15 @@ int main(int argc, char** argv)
 	boost::asio::connect(socket, endpoint_iterator);
 
 	mothbus::tcp_master<tcp::socket> client(socket);
-	std::array<mothbus::byte, 2> singleRegister;
-	auto ec = client.read_registers(slave, register_address, singleRegister);
+	byte_count_t byte_length = 2 * length;
+	byte_vector registers { byte_length };
+	auto ec = client.read_registers(slave, register_address, registers);
 
 	std::cout << "Host: " << host << ":" << port << "\n";
-	std::cout << "register address: " << register_address << " amount: " << 2 << "\n";
+	std::cout << "register address: " << register_address << " amount: " << length << "\n";
 	std::cout << "---------------\n";
 	if (!ec)
-		std::cout << "    value: " << singleRegister << "\n";
+		std::cout << "    value: " << registers << "\n";
 	else
 		std::cout << "error: " << ec.message() << "\n";
 	
