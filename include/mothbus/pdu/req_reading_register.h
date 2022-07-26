@@ -1,5 +1,8 @@
 #pragma once
-#include "../pdu.h"
+
+#include "base.h"
+#include "function_code.h"
+#include "../checked_return.h"
 
 namespace mothbus
 {
