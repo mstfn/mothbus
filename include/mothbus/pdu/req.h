@@ -1,7 +1,7 @@
 #pragma once
 
 #include <mothbus/mothbus.h>
-#include "req_reading_register.h"
+#include "req_read_holding.h"
 #include "../checked_return.h"
 
 namespace mothbus

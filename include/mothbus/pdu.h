@@ -10,9 +10,9 @@
 #include "pdu/function_code.h"
 
 #include "pdu/base.h"
-#include "pdu/req_reading_register.h"
+#include "pdu/req_read_holding.h"
 #include "pdu/req.h"
 
 #include "pdu/resp_exception.h"
-#include "pdu/resp_reading_register.h"
+#include "pdu/resp_read_holding.h"
 #include "pdu/resp.h"
