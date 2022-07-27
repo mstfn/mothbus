@@ -55,6 +55,33 @@ namespace mothbus
 			}
 		}
 
+		template <class Writer>//, std::ptrdiff_t Extent>
+		inline void write(Writer& writer, const std::vector<byte>& v)
+		{
+			for (auto& byte : v)
+			{
+				writer.write(gsl::to_integer<uint8_t>(byte));
+			}
+		}
+
+		template <class Writer>//, std::ptrdiff_t Extent>
+		inline void write(Writer& writer, const span<uint8_t>& v)
+		{
+			for (auto& byte : v)
+			{
+				writer.write(byte);
+			}
+		}
+
+		template <class Writer>//, std::ptrdiff_t Extent>
+		inline void write(Writer& writer, const std::vector<uint8_t>& v)
+		{
+			for (auto& byte : v)
+			{
+				writer.write(byte);
+			}
+		}
+
 		template <class Writer>
 		void write(Writer& writer, const modbus_exception_code& v)
 		{

@@ -97,3 +97,51 @@ TEST(pdu_resp, canWriteHoldingRegister)
 	pdu::write(writer, resp);
 	ASSERT_EQ(expected, out.values);
 }
+
+
+TEST(pdu_req, canReadWriteMultipleRegister)
+{
+	vector_source in({0x10, 0x00, 0x64, 0x00, 0x02, 0x04, 0x03, 0x04, 0x01, 0x02});
+	pdu::pdu_req req;
+	pdu::read(in, req);
+	pdu::write_multiple_reg_pdu_req realReq = boost::get<pdu::write_multiple_reg_pdu_req>(req);
+	ASSERT_EQ(100, realReq.starting_address);
+	ASSERT_EQ(2, realReq.quantity_of_registers);
+	ASSERT_EQ(4, realReq.byte_count);
+}
+
+TEST(pdu_req, canWriteWriteMultipleRegister)
+{
+	pdu::write_multiple_reg_pdu_req req;
+	req.starting_address = 100;
+	req.quantity_of_registers = 2;
+	req.byte_count = 2 * req.quantity_of_registers;
+	req.registers_value = std::vector<uint8_t>({0x01, 0x02, 0x03, 0x04});
+	vector_sink out;
+	pdu::writer<vector_sink> writer(out);
+	pdu::write(writer, req);
+
+	std::vector<uint8_t> expected({0x10, 0x00, 0x64, 0x00, 0x02, 0x04, 0x01, 0x02, 0x03, 0x04});
+	ASSERT_EQ(expected, out.values);
+}
+
+TEST(pdu_resp, canReadWriteMultipleRegister)
+{
+	vector_source in({0x10, 0x00, 0x64, 0x00, 0x52});
+	pdu::write_multiple_reg_pdu_resp resp{0,0};
+	pdu::pdu_resp<pdu::write_multiple_reg_pdu_resp> combinedResponse{resp};
+	pdu::read(in, combinedResponse);
+	ASSERT_EQ(100, resp.starting_address);
+	ASSERT_EQ(82, resp.quantity_of_registers);
+}
+
+
+TEST(pdu_resp, canWriteWriteMultipleRegister)
+{
+	std::vector<uint8_t> expected{0x10, 0x00, 0x64, 0x00, 0x52};
+	vector_sink out;
+	pdu::writer<vector_sink> writer(out);
+	pdu::write_multiple_reg_pdu_resp resp(100, 82);
+	pdu::write(writer, resp);
+	ASSERT_EQ(expected, out.values);
+}

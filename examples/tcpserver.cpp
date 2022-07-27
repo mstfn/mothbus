@@ -18,7 +18,7 @@ struct req_handler : boost::static_visitor<void>
 	void operator()(mothbus::pdu::not_implemented& req)
 	{
 		mothbus::pdu::pdu_exception_resp resp;
-		resp.fc = mothbus::pdu::function_code::read_holding_registers;
+		resp.fc = reinterpret_cast<mothbus::pdu::function_code&>(req.fc);
 		resp.exceptionCode = mothbus::modbus_exception_code::illegal_function;
 		stream.write_response(transactionId, slave, resp);
 	}
@@ -31,7 +31,7 @@ struct req_handler : boost::static_visitor<void>
 		if (slave != 255)
 		{
 			mothbus::pdu::pdu_exception_resp resp;
-			resp.fc = mothbus::pdu::function_code::read_holding_registers;
+			resp.fc = req.fc;
 			resp.exceptionCode = mothbus::modbus_exception_code::gateway_path_unavailable;
 			stream.write_response(transactionId, slave, resp);
 			return;
@@ -44,7 +44,42 @@ struct req_handler : boost::static_visitor<void>
 			return;
 		}
 		mothbus::pdu::pdu_exception_resp resp;
-		resp.fc = mothbus::pdu::function_code::read_holding_registers;
+		resp.fc = req.fc;
+		resp.exceptionCode = mothbus::modbus_exception_code::illegal_data_address;
+		stream.write_response(transactionId, slave, resp);
+	}
+
+	void operator()(mothbus::pdu::write_multiple_reg_pdu_req& req)
+	{
+		std::cout << "write multiple registers request received:\n";
+		std::cout << "slave: " << (int)slave <<"\n";
+		std::cout << "register address: " << req.starting_address << "\n";
+		std::cout << "quantity of registers: " << req.quantity_of_registers << "\n";
+		std::cout << "byte count: " << (int)req.byte_count << "\n";
+		if (slave != 255)
+		{
+			mothbus::pdu::pdu_exception_resp resp;
+			resp.fc = req.fc;
+			resp.exceptionCode = mothbus::modbus_exception_code::gateway_path_unavailable;
+			stream.write_response(transactionId, slave, resp);
+			return;
+		}
+		if (req.starting_address == 100)
+		{
+			if(req.byte_count != 2 * req.quantity_of_registers) {
+				mothbus::pdu::pdu_exception_resp resp;
+				resp.fc = req.fc;
+				resp.exceptionCode = mothbus::modbus_exception_code::illegal_data_value;
+				stream.write_response(transactionId, slave, resp);
+				return;
+			}
+			// acknowledge writing, but ignore the data:
+			mothbus::pdu::write_multiple_reg_pdu_resp resp(req.starting_address, req.quantity_of_registers);
+			stream.write_response(transactionId, slave, resp);
+			return;
+		}
+		mothbus::pdu::pdu_exception_resp resp;
+		resp.fc = req.fc;
 		resp.exceptionCode = mothbus::modbus_exception_code::illegal_data_address;
 		stream.write_response(transactionId, slave, resp);
 	}
