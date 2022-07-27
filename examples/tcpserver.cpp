@@ -18,7 +18,7 @@ struct req_handler : boost::static_visitor<void>
 	void operator()(mothbus::pdu::not_implemented& req)
 	{
 		mothbus::pdu::pdu_exception_resp resp;
-		resp.fc = mothbus::pdu::function_code::read_holding_registers;
+		resp.fc = reinterpret_cast<mothbus::pdu::function_code&>(req.fc);
 		resp.exceptionCode = mothbus::modbus_exception_code::illegal_function;
 		stream.write_response(transactionId, slave, resp);
 	}
@@ -31,7 +31,7 @@ struct req_handler : boost::static_visitor<void>
 		if (slave != 255)
 		{
 			mothbus::pdu::pdu_exception_resp resp;
-			resp.fc = mothbus::pdu::function_code::read_holding_registers;
+			resp.fc = req.fc;
 			resp.exceptionCode = mothbus::modbus_exception_code::gateway_path_unavailable;
 			stream.write_response(transactionId, slave, resp);
 			return;
@@ -44,7 +44,7 @@ struct req_handler : boost::static_visitor<void>
 			return;
 		}
 		mothbus::pdu::pdu_exception_resp resp;
-		resp.fc = mothbus::pdu::function_code::read_holding_registers;
+		resp.fc = req.fc;
 		resp.exceptionCode = mothbus::modbus_exception_code::illegal_data_address;
 		stream.write_response(transactionId, slave, resp);
 	}
