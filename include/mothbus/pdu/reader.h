@@ -44,6 +44,38 @@ namespace mothbus
 		}
 
 		template <class Reader>
+		error_code read(Reader& reader, std::vector<byte>& v)
+		{
+			for (auto& byte : v)
+			{
+				uint8_t temp = 0;
+				MOTH_CHECKED_RETURN(read(reader, temp));
+				byte = gsl::to_byte(temp);
+			}
+			return{};
+		}
+
+		template <class Reader>
+		error_code read(Reader& reader, span<uint8_t>& v)
+		{
+			for (auto& byte : v)
+			{
+				MOTH_CHECKED_RETURN(read(reader, byte));
+			}
+			return{};
+		}
+
+		template <class Reader>
+		error_code read(Reader& reader, std::vector<uint8_t>& v)
+		{
+			for (auto& byte : v)
+			{
+				MOTH_CHECKED_RETURN(read(reader, byte));
+			}
+			return{};
+		}
+
+		template <class Reader>
 		error_code read(Reader& reader, modbus_exception_code& v)
 		{
 			uint8_t h;

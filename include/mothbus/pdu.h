@@ -11,8 +11,10 @@
 
 #include "pdu/base.h"
 #include "pdu/req_read_holding.h"
+#include "pdu/req_write_multiple_reg.h"
 #include "pdu/req.h"
 
 #include "pdu/resp_exception.h"
 #include "pdu/resp_read_holding.h"
+#include "pdu/resp_write_multiple_reg.h"
 #include "pdu/resp.h"

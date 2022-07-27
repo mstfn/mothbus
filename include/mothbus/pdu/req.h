@@ -2,6 +2,7 @@
 
 #include <mothbus/mothbus.h>
 #include "req_read_holding.h"
+#include "req_write_multiple_reg.h"
 #include "../checked_return.h"
 
 namespace mothbus
@@ -14,7 +15,7 @@ namespace mothbus
 			uint8_t fc = 0;
 		};
 
-		using pdu_req = variant<read_holding_pdu_req, not_implemented>;
+		using pdu_req = variant<read_holding_pdu_req, write_multiple_reg_pdu_req, not_implemented>;
 
 
 		namespace detail
