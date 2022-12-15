@@ -1,8 +1,13 @@
 #pragma once
 
 #include <boost/variant.hpp>
+#ifdef USE_GSL
 //#include <gsl/span>
 #include <gsl/gsl>
+#else // USE_GSL
+#include <cstddef>
+#include <tcb/span.hpp>
+#endif // USE_GSL
 #include <boost/system/system_error.hpp>
 #include <boost/asio/read.hpp>
 #include <boost/asio/write.hpp>
@@ -12,12 +17,47 @@ namespace mothbus
 	template<class ...T>
 	using variant = boost::variant<T...>;
 
-
-	template<class T>//, std::ptrdiff_t Extent=gsl::dynamic_extent>
-	using span = gsl::span<T>;//, Extent>;
+#ifdef USE_GSL
+	template<class ...T>
+	using span = gsl::span<T...>;
 
 	using byte = gsl::byte;
 
+	template<class ...T>
+	auto to_integer = &gsl::to_integer<T...>;
+
+	template <typename T>
+	constexpr byte to_byte(T t) noexcept
+	{
+		return gsl::to_byte<T>(t);
+	}
+
+	template <int I>
+	constexpr byte to_byte() noexcept
+	{
+		return gsl::to_byte<I>();
+	}
+#else // USE_GSL
+	template<class ...T>
+	using span = tcb::span<T...>;
+
+	using byte = std::byte;
+
+	template<class ...T>
+	auto to_integer = &std::to_integer<T...>;
+
+	template <typename T>
+	constexpr byte to_byte(T t) noexcept
+	{
+		return byte{t};
+	}
+
+	template <int I>
+	constexpr byte to_byte() noexcept
+	{
+		return byte{I};
+	}
+#endif // USE_GSL
 
 	template <typename SyncWriteStream, typename ConstBufferSequence>
 	inline std::size_t write(SyncWriteStream& s, const ConstBufferSequence& buffers)

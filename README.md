@@ -61,7 +61,7 @@ int main(int argc, char** argv)
 	client.read_registers(slave, register_address, singleRegister);
 	
 	// output value
-	uint16_t value = (gsl::to_integer<uin16_t>(singleRegister[0]) << 8) + gsl::to_integer<uin16_t>(singleRegister[0]);
+	uint16_t value = (mothbus::to_integer<uin16_t>(singleRegister[0]) << 8) + mothbus::to_integer<uin16_t>(singleRegister[0]);
 	std::cout << value;	
 	return 0;
 }
