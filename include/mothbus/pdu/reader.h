@@ -50,7 +50,7 @@ namespace mothbus
 			{
 				uint8_t temp = 0;
 				MOTH_CHECKED_RETURN(read(reader, temp));
-				byte = gsl::to_byte(temp);
+				byte = mothbus::to_byte(temp);
 			}
 			return{};
 		}

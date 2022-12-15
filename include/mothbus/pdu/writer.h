@@ -60,7 +60,7 @@ namespace mothbus
 		{
 			for (auto& byte : v)
 			{
-				writer.write(gsl::to_integer<uint8_t>(byte));
+				writer.write(mothbus::to_integer<uint8_t>(byte));
 			}
 		}
 
