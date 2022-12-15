@@ -52,9 +52,16 @@ endif()
 include_directories(include ${Boost_INCLUDE_DIRS} ${SPAN_INCLUDE})
 
 add_library(mothbus STATIC ${PROJ_INCLUDES} ${PROJ_SRC})
-target_include_directories(mothbus INTERFACE 
-    $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
-    $<INSTALL_INTERFACE:include>)
+if(USE_GSL)
+	target_include_directories(mothbus INTERFACE
+		$<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
+		$<INSTALL_INTERFACE:include>)
+else()
+	target_include_directories(mothbus INTERFACE
+		$<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
+		$<BUILD_INTERFACE:${SPAN_INCLUDE}>
+		$<INSTALL_INTERFACE:include>)
+endif()
 target_link_libraries(mothbus INTERFACE ${Boost_LIBRARIES} ${SPAN_LIB})
 
 # enable_testing()
