@@ -13,11 +13,25 @@ namespace mothbus
 	using variant = boost::variant<T...>;
 
 
-	template<class T>//, std::ptrdiff_t Extent=gsl::dynamic_extent>
-	using span = gsl::span<T>;//, Extent>;
+	template<class ...T>
+	using span = gsl::span<T...>;
 
 	using byte = gsl::byte;
 
+	template<class ...T>
+	auto to_integer = &gsl::to_integer<T...>;
+
+	template <typename T>
+	constexpr byte to_byte(T t) noexcept
+	{
+		return gsl::to_byte<T>(t);
+	}
+
+	template <int I>
+	constexpr byte to_byte() noexcept
+	{
+		return gsl::to_byte<I>();
+	}
 
 	template <typename SyncWriteStream, typename ConstBufferSequence>
 	inline std::size_t write(SyncWriteStream& s, const ConstBufferSequence& buffers)

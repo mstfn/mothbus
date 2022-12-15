@@ -38,7 +38,7 @@ struct req_handler : boost::static_visitor<void>
 		}
 		if (req.starting_address == 100)
 		{
-			std::vector<mothbus::byte> regs(req.quantity_of_registers * 2, gsl::to_byte<0>());
+			std::vector<mothbus::byte> regs(req.quantity_of_registers * 2, mothbus::to_byte<0>());
 			mothbus::pdu::read_holding_pdu_resp resp(regs);
 			stream.write_response(transactionId, slave, resp);
 			return;

@@ -10,10 +10,10 @@ using byte_vector = std::vector<mothbus::byte>;
 using byte_count_t = byte_vector::size_type;
 using reg_count_t = byte_count_t;
 
-std::ostream& operator<<(std::ostream& os, const gsl::span<gsl::byte>& bytes) 
+std::ostream& operator<<(std::ostream& os, const mothbus::span<mothbus::byte>& bytes) 
 {
 	for (auto byte : bytes)
-		os << std::hex << std::setw(2) << std::setfill('0') << gsl::to_integer<int>(byte);
+		os << std::hex << std::setw(2) << std::setfill('0') << mothbus::to_integer<int>(byte);
 	return os;
 }
 
